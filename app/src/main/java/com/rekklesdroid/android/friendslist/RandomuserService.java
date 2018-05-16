@@ -9,7 +9,7 @@ import retrofit2.http.GET;
 
 public interface RandomuserService {
 
-    @GET("?results=10")
+    @GET("?page=1&results=10&inc=name,email,registered,picture")
     Call<RandomuserJSON> getFriends();
 
     Retrofit retrofit = new Retrofit.Builder()

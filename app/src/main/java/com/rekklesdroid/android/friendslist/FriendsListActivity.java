@@ -19,7 +19,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
 
-public class FriendsListActivity extends AppCompatActivity {
+public class FriendsListActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener{
 
     @BindView(R.id.recview_friends_list)
     RecyclerView friendList;
@@ -42,18 +42,15 @@ public class FriendsListActivity extends AppCompatActivity {
         friendListManager = new LinearLayoutManager(this);
         friendList.setLayoutManager(friendListManager);
 
+        swipeRefreshLayout.setOnRefreshListener(this);
+
         GetFriendsAsyncTask getFriendsAsyncTask = new GetFriendsAsyncTask(this);
         getFriendsAsyncTask.execute();
+    }
 
-        swipeRefreshLayout.setOnRefreshListener(
-                new SwipeRefreshLayout.OnRefreshListener(){
-
-                    @Override
-                    public void onRefresh() {
-                        recreate();
-                    }
-                }
-        );
+    @Override
+    public void onRefresh() {
+        recreate();
     }
 
     private static class GetFriendsAsyncTask extends AsyncTask<Void, Void, List<RandomuserResult>> {
