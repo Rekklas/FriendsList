@@ -71,8 +71,13 @@ public class FriendsListActivity extends AppCompatActivity implements SwipeRefre
     @Override
     protected void onPause() {
         super.onPause();
-        db.friendDao().deleteResults();
-        db.friendDao().insertResults(randomuserResults);
+        AppExecutor.getExecutor().getDiskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                db.friendDao().deleteResults();
+                db.friendDao().insertResults(randomuserResults);
+            }
+        });
     }
 
 
@@ -103,7 +108,12 @@ public class FriendsListActivity extends AppCompatActivity implements SwipeRefre
     }
 
     private void loadCachedData() {
-        randomuserResults = db.friendDao().getAllCachedResults();
+        AppExecutor.getExecutor().getDiskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                randomuserResults = db.friendDao().getAllCachedResults();
+            }
+        });
         populateRecViewWithData();
     }
 
