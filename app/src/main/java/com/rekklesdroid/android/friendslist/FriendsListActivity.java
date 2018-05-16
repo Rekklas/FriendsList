@@ -1,8 +1,5 @@
 package com.rekklesdroid.android.friendslist;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,10 +7,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
+import com.rekklesdroid.android.friendslist.adapter.FriendsListAdapter;
+import com.rekklesdroid.android.friendslist.database.AppDatabase;
 import com.rekklesdroid.android.friendslist.model.RandomuserJSON;
 import com.rekklesdroid.android.friendslist.model.RandomuserResult;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,10 +19,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.Cache;
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -68,6 +62,10 @@ public class FriendsListActivity extends AppCompatActivity implements SwipeRefre
         recreate();
     }
 
+    /**
+     * When activity is onPause it deletes all results from database and
+     * cache new downloaded results instead
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -80,7 +78,9 @@ public class FriendsListActivity extends AppCompatActivity implements SwipeRefre
         });
     }
 
-
+    /**
+     * This method is used for loading data with retrofit
+     */
     private void loadData() {
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -107,16 +107,30 @@ public class FriendsListActivity extends AppCompatActivity implements SwipeRefre
         });
     }
 
+    /**
+     * Method loads cached data
+     */
     private void loadCachedData() {
         AppExecutor.getExecutor().getDiskIO().execute(new Runnable() {
             @Override
             public void run() {
                 randomuserResults = db.friendDao().getAllCachedResults();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        populateRecViewWithData();
+                    }
+                });
             }
         });
-        populateRecViewWithData();
+
     }
 
+    /**
+     * Method sort all friends by their first name
+     *
+     * @param randomuserResults list of friends getting from randomuser API
+     */
     private void sortResults(List<RandomuserResult> randomuserResults) {
         Collections.sort(randomuserResults, new Comparator<RandomuserResult>() {
             @Override

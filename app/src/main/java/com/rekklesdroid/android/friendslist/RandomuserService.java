@@ -13,5 +13,4 @@ public interface RandomuserService {
 
     @GET("?page=1&results=10&inc=name,email,registered,picture")
     Call<RandomuserJSON> getFriends();
-
 }

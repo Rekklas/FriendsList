@@ -1,4 +1,4 @@
-package com.rekklesdroid.android.friendslist;
+package com.rekklesdroid.android.friendslist.database;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
@@ -14,7 +14,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase INSTANCE;
 
-    static AppDatabase getDatabase(final Context context) {
+    public static AppDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {

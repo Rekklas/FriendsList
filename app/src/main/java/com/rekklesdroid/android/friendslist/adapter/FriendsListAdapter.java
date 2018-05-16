@@ -1,4 +1,4 @@
-package com.rekklesdroid.android.friendslist;
+package com.rekklesdroid.android.friendslist.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.rekklesdroid.android.friendslist.DetailFriendActivity;
+import com.rekklesdroid.android.friendslist.R;
 import com.rekklesdroid.android.friendslist.model.RandomuserResult;
 import com.squareup.picasso.Picasso;
 
@@ -20,6 +22,9 @@ import butterknife.ButterKnife;
 
 public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.ViewHolder> {
 
+    /**
+     * Constants key values for data transferring via intent
+     */
     public static final String EXTRA_FRIEND_FIRSTNAME = "firstname";
     public static final String EXTRA_FRIEND_LASTNAME = "lastname";
     public static final String EXTRA_FRIEND_EMAIL = "email";
@@ -28,6 +33,9 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
 
     private List<RandomuserResult> randomuserResults;
 
+    /**
+     * The application context for getting resources
+     */
     private Context context;
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -89,6 +97,12 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
 
     }
 
+    /**
+     * This method get url of photo and download it by Picasso
+     *
+     * @param holder holder which is responsible for displaying particular friend
+     * @param result result which is particular friend
+     */
     private void putFriendPhoto(ViewHolder holder, RandomuserResult result) {
         try {
             holder.photoUrl = result.getPicture().getLarge();

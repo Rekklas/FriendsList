@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.rekklesdroid.android.friendslist.adapter.FriendsListAdapter;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
