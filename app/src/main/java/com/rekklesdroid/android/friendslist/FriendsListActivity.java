@@ -13,6 +13,8 @@ import com.rekklesdroid.android.friendslist.model.RandomuserResult;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -80,9 +82,23 @@ public class FriendsListActivity extends AppCompatActivity implements SwipeRefre
         @Override
         protected void onPostExecute(List<RandomuserResult> randomuserResults) {
             super.onPostExecute(randomuserResults);
+
+            sortResults(randomuserResults);
+
             listActivityWeakReference.get().friendListAdapter = new FriendsListAdapter(listActivityWeakReference.get().getApplicationContext(), randomuserResults);
             listActivityWeakReference.get().friendList.setAdapter(listActivityWeakReference.get().friendListAdapter);
         }
+
+        private void sortResults(List<RandomuserResult> randomuserResults) {
+            Collections.sort(randomuserResults, new Comparator<RandomuserResult>() {
+                @Override
+                public int compare(RandomuserResult o1, RandomuserResult o2) {
+
+                    return o1.getName().getFirst().compareTo(o2.getName().getFirst());
+                }
+            });
+        }
+
     }
 
 
