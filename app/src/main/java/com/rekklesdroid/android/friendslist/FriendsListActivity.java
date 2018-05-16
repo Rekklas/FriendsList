@@ -1,6 +1,5 @@
 package com.rekklesdroid.android.friendslist;
 
-import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,8 +10,6 @@ import android.widget.Toast;
 import com.rekklesdroid.android.friendslist.model.RandomuserJSON;
 import com.rekklesdroid.android.friendslist.model.RandomuserResult;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -49,15 +46,15 @@ public class FriendsListActivity extends AppCompatActivity implements SwipeRefre
 
         swipeRefreshLayout.setOnRefreshListener(this);
 
-//        GetFriendsAsyncTask getFriendsAsyncTask = new GetFriendsAsyncTask(this);
-//        getFriendsAsyncTask.execute();
-
         RandomuserService randomuserService = RandomuserService.retrofit.create(RandomuserService.class);
         Call<RandomuserJSON> call = randomuserService.getFriends();
         call.enqueue(new Callback<RandomuserJSON>() {
             @Override
             public void onResponse(Call<RandomuserJSON> call, Response<RandomuserJSON> response) {
                 randomuserResults = response.body().getResults();
+
+                sortResults(randomuserResults);
+
                 friendListAdapter = new FriendsListAdapter(getApplicationContext(),randomuserResults);
                 friendList.setAdapter(friendListAdapter);
             }
@@ -69,56 +66,18 @@ public class FriendsListActivity extends AppCompatActivity implements SwipeRefre
         });
     }
 
+    private void sortResults(List<RandomuserResult> randomuserResults) {
+        Collections.sort(randomuserResults, new Comparator<RandomuserResult>() {
+            @Override
+            public int compare(RandomuserResult o1, RandomuserResult o2) {
+
+                return o1.getName().getFirst().compareTo(o2.getName().getFirst());
+            }
+        });
+    }
+
     @Override
     public void onRefresh() {
         recreate();
     }
-/*
-    private static class GetFriendsAsyncTask extends AsyncTask<Void, Void, List<RandomuserResult>> {
-
-        private final WeakReference<FriendsListActivity> listActivityWeakReference;
-
-        private GetFriendsAsyncTask(FriendsListActivity listActivity) {
-            listActivityWeakReference = new WeakReference<>(listActivity);
-        }
-
-        @Override
-        protected List<RandomuserResult> doInBackground(Void... voids) {
-
-            RandomuserService randomuserService = RandomuserService.retrofit.create(RandomuserService.class);
-            final Call<RandomuserJSON> call = randomuserService.getFriends();
-
-            try {
-                RandomuserJSON randomuserJSON = call.execute().body();
-                listActivityWeakReference.get().randomuserResults = randomuserJSON.getResults();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return listActivityWeakReference.get().randomuserResults;
-        }
-
-        @Override
-        protected void onPostExecute(List<RandomuserResult> randomuserResults) {
-            super.onPostExecute(randomuserResults);
-
-            sortResults(randomuserResults);
-
-            listActivityWeakReference.get().friendListAdapter = new FriendsListAdapter(listActivityWeakReference.get().getApplicationContext(), randomuserResults);
-            listActivityWeakReference.get().friendList.setAdapter(listActivityWeakReference.get().friendListAdapter);
-        }
-
-        private void sortResults(List<RandomuserResult> randomuserResults) {
-            Collections.sort(randomuserResults, new Comparator<RandomuserResult>() {
-                @Override
-                public int compare(RandomuserResult o1, RandomuserResult o2) {
-
-                    return o1.getName().getFirst().compareTo(o2.getName().getFirst());
-                }
-            });
-        }
-
-    }
-*/
-
 }
