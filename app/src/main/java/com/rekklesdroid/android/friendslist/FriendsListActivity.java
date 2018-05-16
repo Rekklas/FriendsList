@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
 
 import com.rekklesdroid.android.friendslist.model.RandomuserJSON;
 import com.rekklesdroid.android.friendslist.model.RandomuserResult;
@@ -20,6 +21,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class FriendsListActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener{
 
@@ -46,15 +49,31 @@ public class FriendsListActivity extends AppCompatActivity implements SwipeRefre
 
         swipeRefreshLayout.setOnRefreshListener(this);
 
-        GetFriendsAsyncTask getFriendsAsyncTask = new GetFriendsAsyncTask(this);
-        getFriendsAsyncTask.execute();
+//        GetFriendsAsyncTask getFriendsAsyncTask = new GetFriendsAsyncTask(this);
+//        getFriendsAsyncTask.execute();
+
+        RandomuserService randomuserService = RandomuserService.retrofit.create(RandomuserService.class);
+        Call<RandomuserJSON> call = randomuserService.getFriends();
+        call.enqueue(new Callback<RandomuserJSON>() {
+            @Override
+            public void onResponse(Call<RandomuserJSON> call, Response<RandomuserJSON> response) {
+                randomuserResults = response.body().getResults();
+                friendListAdapter = new FriendsListAdapter(getApplicationContext(),randomuserResults);
+                friendList.setAdapter(friendListAdapter);
+            }
+
+            @Override
+            public void onFailure(Call<RandomuserJSON> call, Throwable t) {
+                Toast.makeText(FriendsListActivity.this, "An error occurred during networking. Check internet connection", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
     public void onRefresh() {
         recreate();
     }
-
+/*
     private static class GetFriendsAsyncTask extends AsyncTask<Void, Void, List<RandomuserResult>> {
 
         private final WeakReference<FriendsListActivity> listActivityWeakReference;
@@ -100,6 +119,6 @@ public class FriendsListActivity extends AppCompatActivity implements SwipeRefre
         }
 
     }
-
+*/
 
 }
