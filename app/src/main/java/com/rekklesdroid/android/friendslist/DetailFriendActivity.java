@@ -45,7 +45,7 @@ public class DetailFriendActivity extends AppCompatActivity {
                     .resize(250,250)
                     .into(imv_friend_photo);
         } else {
-            // TODO: 16.05.2018 dont have image drawable
+            imv_friend_photo.setImageDrawable(getResources().getDrawable(R.drawable.ic_dont_have_photo));
         }
     }
 
@@ -56,6 +56,6 @@ public class DetailFriendActivity extends AppCompatActivity {
         lastName = friend.getString(FriendsListAdapter.EXTRA_FRIEND_LASTNAME);
         email = friend.getString(FriendsListAdapter.EXTRA_FRIEND_EMAIL);
         registered = friend.getString(FriendsListAdapter.EXTRA_FRIEND_REGISTERED);
-        photoUrl = friend.getString(FriendsListAdapter.EXTRA_FRIEND_PHOTO_URL_LARGE);
+        photoUrl = friend.getString(FriendsListAdapter.EXTRA_FRIEND_PHOTO_URL);
     }
 }

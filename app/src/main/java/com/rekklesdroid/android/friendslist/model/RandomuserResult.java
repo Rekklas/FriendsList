@@ -1,12 +1,21 @@
 package com.rekklesdroid.android.friendslist.model;
 
+import android.arch.persistence.room.Embedded;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
+
+@Entity(tableName = "friend")
 public class RandomuserResult {
 
+    @Embedded
     private RandomuserName name;
 
+    @Embedded
     private RandomuserPicture picture;
 
-    private String email;
+    @PrimaryKey
+    private @NonNull String email;
 
     private String registered;
 

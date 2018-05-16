@@ -24,7 +24,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
     public static final String EXTRA_FRIEND_LASTNAME = "lastname";
     public static final String EXTRA_FRIEND_EMAIL = "email";
     public static final String EXTRA_FRIEND_REGISTERED = "registered";
-    public static final String EXTRA_FRIEND_PHOTO_URL_LARGE = "photo";
+    public static final String EXTRA_FRIEND_PHOTO_URL = "photo";
 
     private List<RandomuserResult> randomuserResults;
 
@@ -40,8 +40,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
         private String lastName;
         private String registered;
         private String email;
-        private String photoUrlMedium;
-        private String photoUrlLarge;
+        private String photoUrl;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -58,7 +57,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
             detailIntent.putExtra(EXTRA_FRIEND_LASTNAME, lastName);
             detailIntent.putExtra(EXTRA_FRIEND_EMAIL, email);
             detailIntent.putExtra(EXTRA_FRIEND_REGISTERED, registered);
-            detailIntent.putExtra(EXTRA_FRIEND_PHOTO_URL_LARGE, photoUrlLarge);
+            detailIntent.putExtra(EXTRA_FRIEND_PHOTO_URL, photoUrl);
             context.startActivity(detailIntent);
         }
     }
@@ -86,21 +85,21 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
         holder.lastName = randomuserResults.get(position).getName().getLast();
         holder.email = randomuserResults.get(position).getEmail();
         holder.registered = randomuserResults.get(position).getRegistered();
-        holder.photoUrlLarge = randomuserResults.get(position).getPicture().getLarge();
+        holder.photoUrl = randomuserResults.get(position).getPicture().getLarge();
 
     }
 
     private void putFriendPhoto(ViewHolder holder, RandomuserResult result) {
         try {
-            holder.photoUrlMedium = result.getPicture().getMedium();
+            holder.photoUrl = result.getPicture().getLarge();
 
             Picasso.with(context)
-                    .load(holder.photoUrlMedium)
+                    .load(holder.photoUrl)
                     .resize(72, 72)
                     .centerCrop()
                     .into(holder.imv_photo);
         } catch (NullPointerException ex) {
-// TODO: 15.05.2018 add icon dont have image
+            holder.imv_photo.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_dont_have_photo));
         }
     }
 

@@ -1,5 +1,8 @@
 package com.rekklesdroid.android.friendslist;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +13,7 @@ import android.widget.Toast;
 import com.rekklesdroid.android.friendslist.model.RandomuserJSON;
 import com.rekklesdroid.android.friendslist.model.RandomuserResult;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,11 +21,17 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.Cache;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
-public class FriendsListActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener{
+public class FriendsListActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     @BindView(R.id.recview_friends_list)
     RecyclerView friendList;
@@ -33,6 +43,8 @@ public class FriendsListActivity extends AppCompatActivity implements SwipeRefre
     private RecyclerView.Adapter friendListAdapter;
 
     List<RandomuserResult> randomuserResults = new ArrayList<RandomuserResult>();
+
+    private AppDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +58,32 @@ public class FriendsListActivity extends AppCompatActivity implements SwipeRefre
 
         swipeRefreshLayout.setOnRefreshListener(this);
 
-        RandomuserService randomuserService = RandomuserService.retrofit.create(RandomuserService.class);
+        db = AppDatabase.getDatabase(getApplicationContext());
+
+        loadData();
+    }
+
+    @Override
+    public void onRefresh() {
+        recreate();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        db.friendDao().deleteResults();
+        db.friendDao().insertResults(randomuserResults);
+    }
+
+
+    private void loadData() {
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://randomuser.me/api/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        RandomuserService randomuserService = retrofit.create(RandomuserService.class);
         Call<RandomuserJSON> call = randomuserService.getFriends();
         call.enqueue(new Callback<RandomuserJSON>() {
             @Override
@@ -54,16 +91,20 @@ public class FriendsListActivity extends AppCompatActivity implements SwipeRefre
                 randomuserResults = response.body().getResults();
 
                 sortResults(randomuserResults);
-
-                friendListAdapter = new FriendsListAdapter(getApplicationContext(),randomuserResults);
-                friendList.setAdapter(friendListAdapter);
+                populateRecViewWithData();
             }
 
             @Override
             public void onFailure(Call<RandomuserJSON> call, Throwable t) {
-                Toast.makeText(FriendsListActivity.this, "An error occurred during networking. Check internet connection", Toast.LENGTH_SHORT).show();
+                loadCachedData();
+                Toast.makeText(FriendsListActivity.this, "An error occurred during networking.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void loadCachedData() {
+        randomuserResults = db.friendDao().getAllCachedResults();
+        populateRecViewWithData();
     }
 
     private void sortResults(List<RandomuserResult> randomuserResults) {
@@ -76,8 +117,8 @@ public class FriendsListActivity extends AppCompatActivity implements SwipeRefre
         });
     }
 
-    @Override
-    public void onRefresh() {
-        recreate();
+    private void populateRecViewWithData() {
+        friendListAdapter = new FriendsListAdapter(getApplicationContext(), randomuserResults);
+        friendList.setAdapter(friendListAdapter);
     }
 }

@@ -1,9 +1,13 @@
 package com.rekklesdroid.android.friendslist.model;
 
+import android.arch.persistence.room.ColumnInfo;
+
 public class RandomuserName {
 
+    @ColumnInfo(name = "first_name")
     private String first;
 
+    @ColumnInfo(name = "last_name")
     private String last;
 
     public String getFirst() {

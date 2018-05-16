@@ -1,18 +1,11 @@
 package com.rekklesdroid.android.friendslist.model;
 
+import android.arch.persistence.room.ColumnInfo;
+
 public class RandomuserPicture {
 
-    private String medium;
-
+    @ColumnInfo(name = "photo_url")
     private String large;
-
-    public String getMedium() {
-        return medium;
-    }
-
-    public void setMedium(String medium) {
-        this.medium = medium;
-    }
 
     public String getLarge() {
         return large;
