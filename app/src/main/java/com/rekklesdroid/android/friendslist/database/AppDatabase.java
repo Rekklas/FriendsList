@@ -7,6 +7,11 @@ import android.content.Context;
 
 import com.rekklesdroid.android.friendslist.model.RandomuserResult;
 
+/**
+ * Read for possible singleton implementation here
+ * Check the "Initialization-on-demand holder idiom"
+ * @link https://javarevealed.wordpress.com/tag/initialization-on-demand-holder/
+ */
 @Database(entities = {RandomuserResult.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 

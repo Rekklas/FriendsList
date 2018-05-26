@@ -1,10 +1,14 @@
 package com.rekklesdroid.android.friendslist;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.rekklesdroid.android.friendslist.adapter.FriendsListAdapter;
@@ -101,7 +105,7 @@ public class FriendsListActivity extends AppCompatActivity implements SwipeRefre
 
             @Override
             public void onFailure(Call<RandomuserJSON> call, Throwable t) {
-                loadCachedData();
+                setupViewModel();
                 Toast.makeText(FriendsListActivity.this, "An error occurred during networking.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -110,20 +114,15 @@ public class FriendsListActivity extends AppCompatActivity implements SwipeRefre
     /**
      * Method loads cached data
      */
-    private void loadCachedData() {
-        AppExecutor.getExecutor().getDiskIO().execute(new Runnable() {
+    private void setupViewModel() {
+        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel.getResults().observe(this, new Observer<List<RandomuserResult>>() {
             @Override
-            public void run() {
-                randomuserResults = db.friendDao().getAllCachedResults();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        populateRecViewWithData();
-                    }
-                });
+            public void onChanged(@Nullable List<RandomuserResult> results) {
+                randomuserResults = results;
+                populateRecViewWithData();
             }
         });
-
     }
 
     /**
