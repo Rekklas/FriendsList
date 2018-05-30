@@ -1,6 +1,6 @@
 # FriendsList
 
-<i>This application uses Randomuser API in order to retrieve list of users. It gets information about randonly generated "friends".</i>
+<i>This application uses Randomuser API in order to retrieve list of users. It gets information about randomly generated "friends".</i>
 
 App contains 2 screens:
 
